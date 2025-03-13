@@ -1,0 +1,6 @@
+@CasaDePasoAWSDemo.Presentation.Api_HostAddress = http://localhost:5244
+
+GET {{CasaDePasoAWSDemo.Presentation.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
