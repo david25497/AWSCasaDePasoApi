@@ -1,0 +1,43 @@
+name: Deploy API to EC2
+
+on:
+  push:
+    branches:
+      - main  # Se ejecuta cuando hay cambios en main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🔄 Checkout del código
+      uses: actions/checkout@v4
+
+    - name: 🛠️ Configurar conexión SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+    - name: 🚀 Desplegar API en EC2
+      run: |
+        ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          cd /home/ubuntu/api/publish
+          git pull origin main
+          dotnet publish -c Release -o /home/ubuntu/api/publish
+
+          echo '{
+            "AuthSettings": {
+              "key": "${{ secrets.AUTH_KEY }}",
+              "Issuer": "${{ secrets.AUTH_ISSUER }}",
+              "Audience": "${{ secrets.AUTH_AUDIENCE }}",
+              "DurationInMinutes": "${{ secrets.AUTH_DURATION }}"
+            },
+            "ConnectionStrings": {
+              "DefaultConnection": "${{ secrets.DB_CONNECTION_STRING }}"
+            }
+          }' > /home/ubuntu/api/publish/appsettings.Production.json
+
+          sudo systemctl restart apicasadepaso
+        EOF
