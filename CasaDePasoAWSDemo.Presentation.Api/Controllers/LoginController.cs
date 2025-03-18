@@ -41,7 +41,7 @@ namespace CasaDePasoAWSDemo.Presentation.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IResult<string>))]
         public async Task<IActionResult> Prueba() // ✅ camelCase para parámetros
         {
-            Result<string> result = Result<string>.Success("Data", "Prueba Mensaje YAML");
+            Result<string> result = Result<string>.Success("Data", "Prueba Mensaje 2 YAML");
             var response = result;
             return Ok(response);
         }
