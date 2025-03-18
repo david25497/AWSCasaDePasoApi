@@ -1,4 +1,5 @@
-﻿using CasaDePasoAWSDemo.Core.Application.DTOs.Login;
+﻿using CasaDePasoAWSDemo.Core.Application.Config;
+using CasaDePasoAWSDemo.Core.Application.DTOs.Login;
 using CasaDePasoAWSDemo.Core.Application.Interfaces.IConfig;
 using CasaDePasoAWSDemo.Core.Application.Interfaces.IServices;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +34,15 @@ namespace CasaDePasoAWSDemo.Presentation.Api.Controllers
             };
 
             var response = await _service.LoginAsync(loginDTO, tokenConfigDTO);
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IResult<string>))]
+        public async Task<IActionResult> Prueba() // ✅ camelCase para parámetros
+        {
+            Result<string> result = Result<string>.Success("Data", "Prueba Mensaje YAML");
+            var response = result;
             return Ok(response);
         }
     }
