@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Crear archivo con el valor del secreto
         run: |
-          echo "${{ secrets.EC2_HOST }}" > secreto_ec2_host.txt
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > secreto_ec2_host.txt
 
       - name: Subir el archivo como artefacto
         uses: actions/upload-artifact@v4
