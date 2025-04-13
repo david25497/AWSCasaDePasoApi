@@ -1,57 +1,20 @@
-name: Deploy API to EC2
+name: Recuperar PEM desde secreto
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch  # Esto permite que lo ejecutes manualmente
 
 jobs:
-  deploy:
+  exportar-pem:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Crear archivo .pem desde el secreto
+        run: |
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > clave_recuperada.pem
+          chmod 600 clave_recuperada.pem
 
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v3
+      - name: Subir archivo como artefacto
+        uses: actions/upload-artifact@v3
         with:
-          dotnet-version: 8.0.x
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Build and publish
-        run: dotnet publish -c Release -o publish
-
-      - name: Configure SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
-      - name: Deploy to EC2
-        run: |
-          scp -o StrictHostKeyChecking=no -r publish/* ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/api/publish/
-
-      - name: Update environment variables
-        run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-          echo "Updating appsettings.json..."
-          cat > /home/ubuntu/api/publish/appsettings.Production.json <<EOL
-          {
-            "AuthSettings": {
-              "Key": "${{ secrets.AUTHSETTINGS__KEY }}",
-              "Issuer": "${{ secrets.AUTHSETTINGS__ISSUER }}",
-              "Audience": "${{ secrets.AUTHSETTINGS__AUDIENCE }}",
-              "DurationInMinutes": "${{ secrets.AUTHSETTINGS__DURATIONINMINUTES }}"
-            },
-            "ConnectionStrings": {
-              "DefaultConnection": "${{ secrets.CONNECTIONSTRINGS__DEFAULTCONNECTION }}"
-            }
-          }
-          EOL
-          EOF
-
-      - name: Restart API service
-        run: ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "sudo systemctl restart apicasadepaso"
+          name: clave-pem
+          path: clave_recuperada.pem
