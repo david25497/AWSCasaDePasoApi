@@ -1,30 +1,13 @@
-name: Recuperar PEM desde secreto
+name: Mostrar Secret EC2_HOST
 
 on:
-  workflow_dispatch  # Esto permite que lo ejecutes manualmente
+  workflow_dispatch: # Permite ejecutar el workflow manualmente desde la interfaz de GitHub
 
 jobs:
-  exportar-pem:
+  mostrar_secret:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Verificar si el secreto está disponible
+      - name: Imprimir el valor del secreto
         run: |
-          if [[ -z "${{ secrets.EC2_SSH_PRIVATE_KEY }}" ]]; then
-            echo "El secreto EC2_SSH_PRIVATE_KEY no está disponible."
-            exit 1
-          else
-            echo "El secreto EC2_SSH_PRIVATE_KEY está disponible."
-          fi
-
-      - name: Crear archivo .pem desde el secreto
-        run: |
-          echo "Generando clave PEM..."
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > clave_recuperada.pem
-          chmod 600 clave_recuperada.pem
-          
-      - name: Subir archivo como artefacto
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: clave-pem
-          path: clave_recuperada.pem
+          echo "El valor del secreto EC2_HOST es: ${{ secrets.EC2_HOST }}"
