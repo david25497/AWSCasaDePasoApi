@@ -10,11 +10,17 @@ jobs:
     steps:
       - name: Crear archivo .pem desde el secreto
         run: |
+          echo "Generando clave PEM..."
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > clave_recuperada.pem
           chmod 600 clave_recuperada.pem
-
+          
+      - name: Verificar valor del secreto (debug)
+        run: |
+          echo "El secreto EC2_SSH_PRIVATE_KEY está siendo accedido"
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}"  # Esto se ocultará como ***
+        
       - name: Subir archivo como artefacto
-        uses: actions/upload-artifact@v2  # Usamos la versión 2 para mayor estabilidad
+        uses: actions/upload-artifact@v2.2.4
         with:
           name: clave-pem
           path: clave_recuperada.pem
