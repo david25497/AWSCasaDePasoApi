@@ -14,7 +14,7 @@ jobs:
           chmod 600 clave_recuperada.pem
 
       - name: Subir archivo como artefacto
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2  # Usamos la versión 2 para mayor estabilidad
         with:
           name: clave-pem
           path: clave_recuperada.pem
