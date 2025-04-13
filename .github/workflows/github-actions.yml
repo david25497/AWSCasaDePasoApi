@@ -1,13 +1,19 @@
-name: Mostrar Secret EC2_HOST
+name: Mostrar Secret EC2_HOST en Artefacto
 
 on:
-  workflow_dispatch: # Permite ejecutar el workflow manualmente desde la interfaz de GitHub
+  workflow_dispatch: # Permite ejecutar el workflow manualmente
 
 jobs:
-  mostrar_secret:
+  mostrar_secret_en_artefacto:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Imprimir el valor del secreto
+      - name: Crear archivo con el valor del secreto
         run: |
-          echo "El valor del secreto EC2_HOST es: ${{ secrets.EC2_HOST }}"
+          echo "${{ secrets.EC2_HOST }}" > secreto_ec2_host.txt
+
+      - name: Subir el archivo como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: secreto-ec2-host
+          path: secreto_ec2_host.txt
