@@ -37,8 +37,9 @@ jobs:
 
       - name: Deploy to EC2
         run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "rm -rf /home/ubuntu/api/publish/*"
           scp -o StrictHostKeyChecking=no -r publish/* ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/api/publish/
-
+          
       - name: Update environment variables
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
