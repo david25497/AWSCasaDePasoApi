@@ -1,0 +1,45 @@
+name: Deploy Mihogar SPA
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'CasaDePasoAWSDemo.Presentation.SPA/**'
+      - 'CasaDePasoAWSDemo.Presentation.SPA.Client/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Publish SPA
+        run: |
+          dotnet publish CasaDePasoAWSDemo.Presentation.SPA/CasaDePasoAWSDemo.Presentation.SPA.csproj -c Release -o publish --no-restore
+
+      - name: Configure SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "rm -rf /home/ubuntu/mihogar/publish/*"
+
+          scp -o StrictHostKeyChecking=no -r publish/* ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/mihogar/publish/
+
+      - name: Restart Mihogar service
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "sudo systemctl restart mihogar"
