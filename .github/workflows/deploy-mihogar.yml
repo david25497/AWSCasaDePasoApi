@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - 'CasaDePasoAWSDemo.Presentation.SPA/**'
-      - 'CasaDePasoAWSDemo.Presentation.SPA.Client/**'
 
 jobs:
   deploy:
@@ -26,7 +25,7 @@ jobs:
 
       - name: Publish SPA
         run: |
-          dotnet publish CasaDePasoAWSDemo.Presentation.SPA/CasaDePasoAWSDemo.Presentation.SPA.csproj -c Release -o publish --no-restore
+          dotnet publish CasaDePasoAWSDemo.Presentation.SPA/CasaDePasoAWSDemo.Presentation.SPA/CasaDePasoAWSDemo.Presentation.SPA.csproj -c Release -o publish --no-restore
 
       - name: Configure SSH key
         run: |
