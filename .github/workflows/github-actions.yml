@@ -4,7 +4,11 @@ on:
   push:
     branches:
       - main
-
+    paths:
+      - 'CasaDePasoAWSDemo.Presentation.Api/**'
+      - 'CasaDePasoAWSDemo.Core.Infrastructure/**'
+      - 'CasaDePasoAWSDemo.Core.Application/**'
+      - 'CasaDePasoAWSDemo.Domain/**'
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -22,7 +26,8 @@ jobs:
         run: dotnet restore
 
       - name: Build and publish
-        run: dotnet publish -c Release -o publish
+        run: |
+          dotnet publish CasaDePasoAWSDemo.Presentation.Api/CasaDePasoAWSDemo.Presentation.Api.csproj -c Release -o publish
 
       - name: Configure SSH key
         run: |
